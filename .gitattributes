@@ -1,0 +1,26 @@
+# Normalize text files to LF across platforms
+* text=auto eol=lf
+
+# Explicitly enforce LF for source and config files
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.toml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.txt text eol=lf
+*.sh text eol=lf
+*.sql text eol=lf
+
+# Keep binary artifacts untouched
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.pkl binary
+*.pt binary

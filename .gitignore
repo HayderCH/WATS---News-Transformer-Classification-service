@@ -1,0 +1,119 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+*.whl
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Test and coverage outputs
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.cache/
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment files
+.env
+.env.*
+
+# MLflow tracking data
+mlruns/
+
+# Local datasets and caches
+data/raw/
+!data/raw/huffpost/*.dvc
+data/processed/
+data/feedback.db
+artifacts/archives/
+artifacts/tmp/
+artifacts/cache/
+/models/
+!/models/.gitkeep
+
+# Model weight & serialized artifact files
+*.ckpt
+*.ckpt.*
+*.pt
+*.pth
+*.bin
+*.safetensors
+*.onnx
+*.h5
+*.pb
+*.joblib
+*.pkl
+*.pickle
+*.dill
+*.sav
+
+# Large archives produced during experiments
+artifacts/**/*.zip
+artifacts/**/*.tar
+artifacts/**/*.tar.gz
+artifacts/**/*.tgz
+artifacts/**/*.7z
+
+# Training run artifacts
+**/checkpoints/
+**/runs/
+
+# Generated images and media files (allow docs/images)
+generated_images/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.svg
+*.ico
+!docs/images/*
+!docs/**/*.png
+!docs/**/*.svg
+
+# Vector stores and embeddings (large binary files)
+data/vectorstores/
+data/images/embeddings/
+*.faiss
+*.pkl
+*.index
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Large data files
+data/processed/
+data/raw/
+!data/raw/huffpost/*.dvc
+
+# OS metadata
+.DS_Store
+Thumbs.db

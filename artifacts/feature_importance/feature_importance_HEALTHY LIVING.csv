@@ -1,0 +1,10 @@
+feature,importance
+day_of_week,0.06645087
+month,0.042270266
+day_of_year,0.060587738
+lag_1,0.088910185
+lag_7,0.059159275
+lag_14,0.054745294
+lag_30,0.07056191
+rolling_mean_7,0.47920966
+rolling_std_7,0.07810478

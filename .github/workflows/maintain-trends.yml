@@ -1,0 +1,38 @@
+name: Maintain Trends Snapshot
+
+on:
+  schedule:
+    - cron: "15 5 * * *" # Daily at 05:15 UTC
+  workflow_dispatch:
+
+jobs:
+  maintain-trends:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Seed sample data
+        run: |
+          python scripts/manage.py seed-db --overwrite
+
+      - name: Compute trend snapshot
+        run: |
+          python scripts/manage.py maintain-trends --window 30
+
+      - name: Upload snapshot artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trend-snapshot
+          path: artifacts/trends/latest.json

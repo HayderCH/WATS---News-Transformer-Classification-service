@@ -1,0 +1,24 @@
+stages:
+  fetch_images:
+    cmd: python scripts/fetch_images.py --output-dir data/images/raw --dataset-size 1000
+    deps:
+      - scripts/fetch_images.py
+    outs:
+      - data/images/raw/
+      - data/images/metadata.json
+
+  extract_embeddings:
+    cmd: python scripts/extract_embeddings.py --input-dir data/images/raw --output-dir data/images/embeddings
+    deps:
+      - scripts/extract_embeddings.py
+      - data/images/raw/
+    outs:
+      - data/images/embeddings/embeddings.pkl
+
+  train_fusion_model:
+    cmd: python scripts/train_fusion_model.py --embeddings data/images/embeddings/embeddings.pkl --output-dir models/fusion/
+    deps:
+      - scripts/train_fusion_model.py
+      - data/images/embeddings/embeddings.pkl
+    outs:
+      - models/fusion/

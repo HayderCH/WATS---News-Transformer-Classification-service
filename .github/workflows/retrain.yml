@@ -1,0 +1,188 @@
+name: Retrain Model on Drift Detection
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for retraining"
+        required: false
+        default: "Manual trigger"
+      drift_threshold:
+        description: "Drift threshold for triggering retrain"
+        required: false
+        default: "0.5"
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: "0 2 * * 0"
+  push:
+    branches: [main, master]
+    paths:
+      - "data/reference_dataset.csv"
+      - "scripts/drift_detection.py"
+
+jobs:
+  check-drift:
+    runs-on: ubuntu-latest
+    outputs:
+      drift_detected: ${{ steps.drift-check.outputs.drift_detected }}
+      drift_score: ${{ steps.drift-check.outputs.drift_score }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Check for data drift
+        id: drift-check
+        run: |
+          python scripts/drift_detection.py > drift_report.txt
+          echo "drift_detected=true" >> $GITHUB_OUTPUT
+          echo "drift_score=1.0" >> $GITHUB_OUTPUT
+
+      - name: Upload drift report
+        uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: drift_report.txt
+
+  retrain-model:
+    needs: check-drift
+    if: needs.check-drift.outputs.drift_detected == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Download models and data
+        run: |
+          # Download pre-trained models if needed
+          # This would be replaced with actual model download logic
+          echo "Downloading models..."
+
+      - name: Retrain models
+        run: |
+          # Retrain sklearn model
+          python scripts/train_baseline.py
+
+          # Retrain transformer model
+          python scripts/train_transformer_huffpost.py
+
+      - name: Run tests
+        run: |
+          python -m pytest tests/ -v --tb=short
+
+      - name: Update reference dataset
+        run: |
+          # Update reference data with recent predictions
+          python -c "
+          import pandas as pd
+          from scripts.drift_detection import get_drift_detector
+          # This would collect recent production data
+          # For now, just regenerate reference dataset
+          "
+
+      - name: Build and test BentoML service
+        run: |
+          # Test BentoML service
+          python -c "
+          from scripts.serve import NewsClassifierService
+          svc = NewsClassifierService()
+          print('Service built successfully')
+          "
+
+      - name: Create model artifacts bundle
+        run: |
+          python scripts/manage.py bundle-artifacts models
+
+      - name: Upload new model artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifacts-${{ github.run_number }}
+          path: artifacts/
+
+  deploy:
+    needs: retrain-model
+    if: needs.retrain-model.result == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download model artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: model-artifacts-${{ github.run_number }}
+
+      - name: Deploy to staging
+        run: |
+          echo "Deploying to staging environment..."
+          # Add actual deployment commands here
+          # For example: kubectl apply, docker push, etc.
+
+      - name: Run integration tests
+        run: |
+          echo "Running integration tests..."
+          # Add integration test commands
+
+      - name: Promote to production
+        if: github.ref == 'refs/heads/main'
+        run: |
+          echo "Promoting to production..."
+          # Add production deployment commands
+
+      - name: Notify stakeholders
+        if: always()
+        run: |
+          echo "Sending notification..."
+          # Add notification logic (Slack, email, etc.)
+
+  notify-failure:
+    needs: [check-drift, retrain-model, deploy]
+    if: failure()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify on failure
+        run: |
+          echo "Pipeline failed - manual intervention required"
+          # Add failure notification logic

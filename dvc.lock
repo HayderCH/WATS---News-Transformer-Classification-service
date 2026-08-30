@@ -1,0 +1,56 @@
+schema: '2.0'
+stages:
+  fetch_images:
+    cmd: python scripts/fetch_images.py --output-dir data/images/raw 
+      --dataset-size 1000
+    deps:
+    - path: scripts/fetch_images.py
+      hash: md5
+      md5: 51da3943e3b8699c4bbfb29aaa409650
+      size: 8040
+    outs:
+    - path: data/images/metadata.json
+      hash: md5
+      md5: 57bb98b6261563100151dadee34aeb9b
+      size: 441250
+    - path: data/images/raw/
+      hash: md5
+      md5: a8eab67b4e4f649af1a6ba30ae0fe3e2.dir
+      size: 4873322
+      nfiles: 1000
+  extract_embeddings:
+    cmd: python scripts/extract_embeddings.py --input-dir data/images/raw 
+      --output-dir data/images/embeddings
+    deps:
+    - path: data/images/raw/
+      hash: md5
+      md5: a8eab67b4e4f649af1a6ba30ae0fe3e2.dir
+      size: 4873322
+      nfiles: 1000
+    - path: scripts/extract_embeddings.py
+      hash: md5
+      md5: fdf512da0ac505d57f3f5ffeaebe9b30
+      size: 5675
+    outs:
+    - path: data/images/embeddings/embeddings.pkl
+      hash: md5
+      md5: a079296202162db38aaf1af0ccbfc07e
+      size: 2057261
+  train_fusion_model:
+    cmd: python scripts/train_fusion_model.py --embeddings 
+      data/images/embeddings/embeddings.pkl --output-dir models/fusion/
+    deps:
+    - path: data/images/embeddings/embeddings.pkl
+      hash: md5
+      md5: a079296202162db38aaf1af0ccbfc07e
+      size: 2057261
+    - path: scripts/train_fusion_model.py
+      hash: md5
+      md5: bd7c58de6ed0bfb84973beb929643baf
+      size: 10849
+    outs:
+    - path: models/fusion/
+      hash: md5
+      md5: d802c09b2c5eb6e36eac1cfd7e2c6f1e.dir
+      size: 1469171
+      nfiles: 2
