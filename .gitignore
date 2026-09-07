@@ -96,6 +96,7 @@ generated_images/
 !docs/images/*
 !docs/**/*.png
 !docs/**/*.svg
+!screenshots/*
 
 # Vector stores and embeddings (large binary files)
 data/vectorstores/
