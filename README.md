@@ -42,15 +42,14 @@
 
 ---
 
-## 📸 Streamlit Dashboard Screenshots
+## 📸 Streamlit Dashboard — 10 Tabs
 
-| Classify Tab (DeBERTa inference) | Live Topic Trends (Plotly) |
-|---|---|
-| ![Classify](screenshots/01_classify_tab.jpg) | ![Trends](screenshots/02_trends_tab.jpg) |
+The Streamlit command center provides a complete stakeholder interface. Screenshot from the live app:
 
-**HITL Review Queue — Active Learning**
+### Classify Tab — DeBERTa inference + multimodal input
+![Classify Tab](screenshots/01_classify_tab.jpg)
 
-![Review Queue](screenshots/03_review_queue.jpg)
+> The dashboard connects to the FastAPI backend (port 8001). All 10 tabs are active: **Classify · Summarize · Trends · Forecasting · Review · Stream Review · Metrics · Images · Streaming · Chatbot**
 
 ---
 
